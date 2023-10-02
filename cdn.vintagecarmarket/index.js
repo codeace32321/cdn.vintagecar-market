@@ -175,12 +175,7 @@ var makePicker = document.getElementById('make-picker');
 var modelPicker = document.getElementById('model-picker');
 var mileagePicker = document.getElementById('mileage-picker');
 
-// Set default values
-listingName.value = "Add Listing Title";
-Price.value = 11111; // Numeric value
-shortDescription.value = "Add Short Description";
-modelPicker.value = "Honda";
-mileagePicker.value = 1000;
+
 
 // Update the preview whenever the input changes
 vehiclePicker.addEventListener('input', updatePreview);
