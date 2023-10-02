@@ -1,4 +1,5 @@
 
+/** 
 document.addEventListener("DOMContentLoaded", function () {
     const forms = document.querySelectorAll('form[ms-code-file-upload="form"]');
     
@@ -61,6 +62,91 @@ document.addEventListener("DOMContentLoaded", function () {
                         previewImage.src = ''; // Clear the preview if no file is selected
                     }
                 });
+            }
+        });
+    });
+});
+*/
+
+document.addEventListener("DOMContentLoaded", function () {
+    const forms = document.querySelectorAll('form[ms-code-file-upload="form"]');
+    
+    forms.forEach((form) => {
+        form.setAttribute('enctype', 'multipart/form-data');
+        const uploadInputs = form.querySelectorAll('[ms-code-file-upload-input]');
+        
+        uploadInputs.forEach((uploadInput) => {
+            const inputName = uploadInput.getAttribute('ms-code-file-upload-input');
+            
+            const fileInput = document.createElement('input');
+            fileInput.setAttribute('type', 'file');
+            fileInput.setAttribute('name', inputName);
+            fileInput.setAttribute('id', inputName);
+            
+            // Append the dynamically created file input to the container
+            uploadInput.appendChild(fileInput);
+            
+            if (inputName === 'fileToUpload') {
+                // Handle special behavior for the thumbnail input
+                const previewImage = document.getElementById('preview-img');
+                
+                fileInput.addEventListener('change', function () {
+                    const file = fileInput.files[0];
+                    
+                    if (file) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function (e) {
+                            previewImage.src = e.target.result;
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewImage.src = ''; // Clear the preview if no file is selected
+                    }
+                });
+            } else {
+                // Handle behavior for other inputs (non-thumbnail)
+                const previewImage = document.createElement('img');
+                previewImage.setAttribute('id', 'preview-' + inputName);
+                
+                // Append the dynamically created image element for preview
+                uploadInput.appendChild(previewImage);
+                
+                fileInput.addEventListener('change', function () {
+                    const file = fileInput.files[0];
+                    const previewId = 'preview-' + inputName;
+                    const previewImage = document.getElementById(previewId);
+                    
+                    if (file) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function (e) {
+                            previewImage.src = e.target.result;
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewImage.src = ''; // Clear the preview if no file is selected
+                    }
+                });
+            }
+        });
+
+        // Add a submit event listener to the form
+        form.addEventListener('submit', function (event) {
+            // Check if any file input in the form has a selected file
+            let hasFileSelected = false;
+            uploadInputs.forEach((uploadInput) => {
+                if (uploadInput.querySelector('input[type="file"]').files.length > 0) {
+                    hasFileSelected = true;
+                }
+            });
+
+            // If no file is selected, prevent the form submission
+            if (!hasFileSelected) {
+                event.preventDefault();
+                // Optionally, you can display an error message or perform other actions here.
             }
         });
     });
