@@ -21,54 +21,48 @@ document.addEventListener("DOMContentLoaded", function () {
             // Append the dynamically created file input to the container
             uploadInput.appendChild(fileInput);
             
-            if (inputName === 'fileToUpload') {
-                // Handle special behavior for the thumbnail input
-                const previewImage = document.getElementById('preview-img');
+            fileInput.addEventListener('change', function () {
+                const file = fileInput.files[0];
+                const previewId = 'preview-' + inputName;
+                const previewImage = document.getElementById(previewId);
                 
-                fileInput.addEventListener('change', function () {
-                    const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
                     
-                    if (file) {
-                        const reader = new FileReader();
-                        
-                        reader.onload = function (e) {
-                            previewImage.src = e.target.result;
-                        };
-                        
-                        reader.readAsDataURL(file);
-                    } else {
-                        previewImage.src = ''; // Clear the preview if no file is selected
-                    }
-                });
-            } else {
-                // Handle behavior for other inputs (non-thumbnail)
-                const previewImage = document.createElement('img');
-                previewImage.setAttribute('id', 'preview-' + inputName);
-                
-                // Append the dynamically created image element for preview
-                uploadInput.appendChild(previewImage);
-                
-                fileInput.addEventListener('change', function () {
-                    const file = fileInput.files[0];
-                    const previewId = 'preview-' + inputName;
-                    const previewImage = document.getElementById(previewId);
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                    };
                     
-                    if (file) {
-                        const reader = new FileReader();
-                        
-                        reader.onload = function (e) {
-                            previewImage.src = e.target.result;
-                        };
-                        
-                        reader.readAsDataURL(file);
-                    } else {
-                        previewImage.src = ''; // Clear the preview if no file is selected
-                    }
-                });
+                    reader.readAsDataURL(file);
+                } else {
+                    previewImage.src = ''; // Clear the preview if no file is selected
+                }
+            });
+        });
+    });
+
+    // Add a submit event listener to the form
+    forms.forEach((form) => {
+        form.addEventListener('submit', function (e) {
+            const uploadInputs = form.querySelectorAll('[ms-code-file-upload-input]');
+            let shouldSubmit = true;
+            
+            uploadInputs.forEach((uploadInput) => {
+                const fileInput = uploadInput.querySelector('input[type="file"]');
+                
+                if (!fileInput || !fileInput.files[0]) {
+                    shouldSubmit = false;
+                }
+            });
+            
+            if (!shouldSubmit) {
+                e.preventDefault(); // Prevent form submission
+                alert('Please upload files for all inputs.'); // You can display a message to the user.
             }
         });
     });
 });
+
 
 
 
